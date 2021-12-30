@@ -58,3 +58,5 @@ resources/*.json
 
 # Virtual environment
 env/
+
+person_distance/
