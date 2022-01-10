@@ -30,8 +30,8 @@ String btsRead() {
   if (bts.available()) {
     receiveData = bts.readStringUntil(';');
     M5.Lcd.println(receiveData);
-    Serial.printf( "rx : %02X\n", bts.read());
-    bts.print("sendOK");
+    // Serial.printf( "rx : %02X\n", bts.read());
+    // bts.print("sendOK");
   }
   return receiveData;
 }
@@ -54,7 +54,7 @@ void vibration(String message) {
 void loop() {
   btsRead();
 
-  vibration(btsRead());
+//   vibration(btsRead());
 
   //delay(1000);
 }

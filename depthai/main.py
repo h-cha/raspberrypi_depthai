@@ -9,7 +9,7 @@ from config import labelMap
 from depthai_utils import DepthAI
 # from distance import DistanceGuardian, DistanceGuardianDebug
 
-log = logging.getLogger(__name__)
+# log = logging.getLogger(__name__)
 
 
 class Main:
@@ -35,9 +35,10 @@ class Main:
         try:
             print("Setup complete, parsing frames...")
             for frame, detections in self.depthai.capture():
+                # cv2.imshow("new", frame)
                 # self.parse_frame(frame, results)
-                self.alert.send_message(frame, detections)
-            self.depthai.capture()
+                self.alert.send_message(detections)
+            # self.depthai.capture()
         finally:
             del self.depthai
 
