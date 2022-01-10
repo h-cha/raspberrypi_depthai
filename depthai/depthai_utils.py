@@ -6,11 +6,19 @@ import cv2
 import depthai as dai
 from imutils.video import FPS
 import time
+import argparse
 
 syncNN = True
 labelMap = ["background", "aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow",
             "diningtable", "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
 
+parser = argparse.ArgumentParser()
+parser.add_argument('-ff', '--full_frame', action="store_true", help="Perform tracking on full RGB frame", default=False)
+
+args = parser.parse_args()
+
+
+fullFrameTracking = args.full_frame
 class DepthAI:
     def create_pipeline(self):
         print("Creating DepthAI pipeline...")
@@ -67,12 +75,12 @@ class DepthAI:
         monoRight.out.link(stereo.right)
 
         colorCam.preview.link(spatialDetectionNetwork.input)
-        if syncNN:
-            # spatialDetectionNetwork.passthrough.link(xoutRgb.input)
-                # fullFrame
+
+        # fullFrame
+        if fullFrameTracking:
             colorCam.video.link(xoutRgb.input)
         else:
-            colorCam.preview.link(xoutRgb.input)
+            spatialDetectionNetwork.passthrough.link(xoutRgb.input)
 
         spatialDetectionNetwork.out.link(xoutNN.input)
         spatialDetectionNetwork.boundingBoxMapping.link(xoutBoundingBoxDepthMapping.input)
@@ -90,7 +98,10 @@ class DepthAI:
         objectTracker.setTrackerIdAssigmentPolicy(dai.TrackerIdAssigmentPolicy.SMALLEST_ID)
 
         # fullFrame
-        colorCam.video.link(objectTracker.inputTrackerFrame)
+        if fullFrameTracking:
+            colorCam.video.link(objectTracker.inputTrackerFrame)
+        else:
+            spatialDetectionNetwork.passthrough.link(objectTracker.inputTrackerFrame)
 
         spatialDetectionNetwork.passthrough.link(objectTracker.inputDetectionFrame)
         spatialDetectionNetwork.out.link(objectTracker.inputDetections)
@@ -253,6 +264,7 @@ class DepthAI:
                 cv2.putText(frame, "NN fps: {:.2f}".format(fps), (2, frame.shape[0] - 4), cv2.FONT_HERSHEY_TRIPLEX, 2, color)
 
                 cv2.imshow("tracker", frame)
+                print("NN fps: {:.2f}".format(fps))
 
                 if cv2.waitKey(1) == ord('q'):
                     break
