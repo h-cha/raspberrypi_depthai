@@ -3,10 +3,10 @@ import logging
 import cv2
 log = logging.getLogger(__name__)
 
-# ser0 = serial.Serial('/dev/rfcomm0')
+ser0 = serial.Serial('/dev/rfcomm0')
 # ser1 = serial.Serial('/dev/rfcomm1')
 # ser1 = serial.Serial('/dev/tty.M5StackLEFT')
-ser0 = serial.Serial('/dev/tty.M5StackRIGHT')
+# ser0 = serial.Serial('/dev/tty.M5StackRIGHT')
 
 
 #############  TODO  ###########
