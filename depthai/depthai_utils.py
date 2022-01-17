@@ -15,11 +15,12 @@ labelMap = ["background", "aeroplane", "bicycle", "bird", "boat", "bottle", "bus
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-ff', '--full_frame', action="store_true", help="Perform tracking on full RGB frame", default=False)
-
+parser.add_argument('-tp', '--tracking_target_person', action="store_true", help="Perform tracking person", default=False)
 args = parser.parse_args()
 
 
 fullFrameTracking = args.full_frame
+trackingPerson = args.tracking_target_person
 class DepthAI:
     def create_pipeline(self):
         print("Creating DepthAI pipeline...")
@@ -91,8 +92,11 @@ class DepthAI:
 
         objectTracker.passthroughTrackerFrame.link(xoutRgb.input)
 
+        if trackingPerson:
+            objectTracker.setDetectionLabelsToTrack([15])  # track only person
+        else:
+            objectTracker.setDetectionLabelsToTrack([7])  # track only car
 
-        objectTracker.setDetectionLabelsToTrack([15])  # track only person
         # possible tracking types: ZERO_TERM_COLOR_HISTOGRAM, ZERO_TERM_IMAGELESS
         objectTracker.setTrackerType(dai.TrackerType.ZERO_TERM_COLOR_HISTOGRAM)
         # take the smallest ID when new object is tracked, possible options: SMALLEST_ID, UNIQUE_ID
