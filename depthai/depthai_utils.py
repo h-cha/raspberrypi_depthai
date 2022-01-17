@@ -7,6 +7,7 @@ import depthai as dai
 from imutils.video import FPS
 import time
 import argparse
+from datetime import datetime, timedelta
 
 syncNN = True
 labelMap = ["background", "aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow",
@@ -258,13 +259,13 @@ class DepthAI:
                         'depth_x': t.spatialCoordinates.x / 1000,
                         'depth_y': t.spatialCoordinates.y / 1000,
                         'depth_z': t.spatialCoordinates.z / 1000,
-                        'status': t.status,
+                        'status': statusMap[t.status],
+                        'time': datetime.now(),
                     })
 
                 cv2.putText(frame, "NN fps: {:.2f}".format(fps), (2, frame.shape[0] - 4), cv2.FONT_HERSHEY_TRIPLEX, 2, color)
 
                 cv2.imshow("tracker", frame)
-                print("NN fps: {:.2f}".format(fps))
 
                 if cv2.waitKey(1) == ord('q'):
                     break
