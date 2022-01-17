@@ -7,7 +7,7 @@ import numpy as np
 from alert import AlertM5Stack
 from config import labelMap
 from depthai_utils import DepthAI
-from distance import DistanceGuardian, DistanceGuardianDebug
+from distance import DistanceGuardian
 
 
 

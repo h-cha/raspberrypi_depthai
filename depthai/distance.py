@@ -41,17 +41,17 @@ class DistanceGuardian:
                 self.tracking[tracking_id] = now_distance
 
                 # 同じ時間に　1つのみ   result_id はtime
-                if _id not in self.result_id:
-                    results.append({
-                        'id': tracking_id,
-                        'dangerous': now_distance < self.max_distance,
-                        'close': close,
-                        'time': datetime.now().strftime('%Y年%m月%d日 %H:%M:%S'),
-                        'status': detection['status'],
-                    })
+                
+                results.append({
+                    'id': tracking_id,
+                    'dangerous': now_distance < self.max_distance,
+                    'close': close,
+                    'time': datetime.now().strftime('%Y年%m月%d日 %H:%M:%S'),
+                    'status': detection['status'],
+                })
 
                 # 同じIDはself.trackingに追加しない
                 self.id_time.append(tracking_id)
             # log.info("DG: {}".format(self.tracking))
             # log.info("results: {}".format(results))
-        return resultss
+        return results
