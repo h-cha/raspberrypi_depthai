@@ -60,3 +60,4 @@ resources/*.json
 env/
 
 person_distance/
+.__camera.lock
