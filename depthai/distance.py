@@ -37,10 +37,10 @@ class DistanceGuardian:
             dangerous = now_distance < self.max_distance
 
             if tracking_id not in self.id_time and detection['status'] != 'REMOVED':
-                if dangerous == True and past_tracking_id in self.tracking:
-                # もし　past_time　in tracking なら　past_distance と　now_distance を比較
-                    past_distance = self.tracking[past_tracking_id]
-                    close = compare_past_distance(now_distance, past_distance, self.args.compare_distance)
+                # if dangerous == True and past_tracking_id in self.tracking:
+                # # もし　past_time　in tracking なら　past_distance と　now_distance を比較
+                #     past_distance = self.tracking[past_tracking_id]
+                #     close = compare_past_distance(now_distance, past_distance, self.args.compare_distance)
 
 
                 self.tracking[tracking_id] = now_distance
@@ -49,10 +49,10 @@ class DistanceGuardian:
                 results.append({
                     'id': tracking_id,
                     'dangerous': now_distance < self.max_distance,
-                    'close': close,
+                    # 'close': close,
                     'time': datetime.now().strftime('%Y年%m月%d日 %H:%M:%S'),
                     'status': detection['status'],
-                    'past_distance': past_distance,
+                    # 'past_distance': past_distance,
                     'now_distance': now_distance,
                 })
 

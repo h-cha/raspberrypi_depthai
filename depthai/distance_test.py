@@ -14,7 +14,7 @@ class DistanceGuardian:
 
     def __init__(self):
         self.tracking = {}
-        self.time_difference = timedelta(seconds=5)
+        self.time_difference = timedelta(seconds=2)
         self.id_time = []
         self.result_id = []
 

@@ -239,13 +239,13 @@ class DepthAI:
 
                     statusMap = {dai.Tracklet.TrackingStatus.NEW : "NEW", dai.Tracklet.TrackingStatus.TRACKED : "TRACKED", dai.Tracklet.TrackingStatus.LOST : "LOST", dai.Tracklet.TrackingStatus.REMOVED : "REMOVED" }
                     # cv2.putText(frame, str(label), (x1 + 10, y1 + 20), cv2.FONT_HERSHEY_TRIPLEX, 1, color)
-                    cv2.putText(frame, f"ID: {[t.id]}", (x1 + 10, y1 + 30), cv2.FONT_HERSHEY_TRIPLEX, 1, color)
-                    cv2.putText(frame, statusMap[t.status], (x1 + 10, y1 + 40), cv2.FONT_HERSHEY_TRIPLEX, 1, color)
+                    # cv2.putText(frame, f"ID: {[t.id]}", (x1 + 10, y1 + 30), cv2.FONT_HERSHEY_TRIPLEX, 1, color)
+                    # cv2.putText(frame, statusMap[t.status], (x1 + 10, y1 + 40), cv2.FONT_HERSHEY_TRIPLEX, 1, color)
                     cv2.rectangle(frame, (x1, y1), (x2, y2), color, cv2.FONT_HERSHEY_SIMPLEX)
 
                     # cv2.putText(frame, f"X: {int(t.spatialCoordinates.x / 1000)} m", (x1 + 10, y1 + 50), cv2.FONT_HERSHEY_TRIPLEX, 1, color)
                     # cv2.putText(frame, f"Y: {int(t.spatialCoordinates.y / 1000)} m", (x1 + 10, y1 + 60), cv2.FONT_HERSHEY_TRIPLEX, 1, color)
-                    cv2.putText(frame, f"Z: {int(t.spatialCoordinates.z / 1000)} m", (x1 + 10, y1 + 100), cv2.FONT_HERSHEY_TRIPLEX, 1, color)
+                    cv2.putText(frame, f"{int(t.spatialCoordinates.z / 1000)} m", (x1 + 10, y1 + 20), cv2.FONT_HERSHEY_TRIPLEX, 1, color)
 
                     bboxes.append({
                         'id': t.id,
