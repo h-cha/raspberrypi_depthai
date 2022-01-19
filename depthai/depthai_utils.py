@@ -8,21 +8,16 @@ from imutils.video import FPS
 import time
 import argparse
 from datetime import datetime, timedelta
+from arg_manager import parseArgs
 
 syncNN = True
 labelMap = ["background", "aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow",
             "diningtable", "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
 
-parser = argparse.ArgumentParser()
-parser.add_argument('-ff', '--full_frame', action="store_true", help="Perform tracking on full RGB frame", default=False)
-parser.add_argument('-tp', '--tracking_target_person', action="store_true", help="Perform tracking person", default=False)
-args = parser.parse_args()
 
-
-fullFrameTracking = args.full_frame
-trackingPerson = args.tracking_target_person
 class DepthAI:
     def create_pipeline(self):
+        args = parseArgs()
         print("Creating DepthAI pipeline...")
         # Start defining a pipeline
         pipeline = dai.Pipeline()
@@ -79,7 +74,7 @@ class DepthAI:
         colorCam.preview.link(spatialDetectionNetwork.input)
 
         # fullFrame
-        if fullFrameTracking:
+        if args.full_frame:
             colorCam.video.link(xoutRgb.input)
         else:
             spatialDetectionNetwork.passthrough.link(xoutRgb.input)
@@ -92,7 +87,7 @@ class DepthAI:
 
         objectTracker.passthroughTrackerFrame.link(xoutRgb.input)
 
-        if trackingPerson:
+        if args.tracking_target_person:
             objectTracker.setDetectionLabelsToTrack([15])  # track only person
         else:
             objectTracker.setDetectionLabelsToTrack([7])  # track only car
@@ -103,7 +98,7 @@ class DepthAI:
         objectTracker.setTrackerIdAssigmentPolicy(dai.TrackerIdAssigmentPolicy.SMALLEST_ID)
 
         # fullFrame
-        if fullFrameTracking:
+        if args.full_frame:
             colorCam.video.link(objectTracker.inputTrackerFrame)
         else:
             spatialDetectionNetwork.passthrough.link(objectTracker.inputTrackerFrame)
@@ -198,7 +193,7 @@ class DepthAI:
                     # cv2.rectangle(frame, (x1, y1), (x2, y2), color, cv2.FONT_HERSHEY_SIMPLEX)
 
                 # cv2.putText(frame, "NN fps: {:.2f}".format(fps), (2, frame.shape[0] - 4), cv2.FONT_HERSHEY_TRIPLEX, 0.4, color)
-                cv2.line(frame, (width // 2, 0), (width // 2, height), (0, 0, 0), thickness=5, lineType=cv2.LINE_4)
+                # cv2.line(frame, (width // 2, 0), (width // 2, height), (0, 0, 0), thickness=5, lineType=cv2.LINE_4)
                 # cv2.imshow("depth", depthFrameColor)
                 # cv2.imshow("rgb", frame)
 
@@ -243,14 +238,14 @@ class DepthAI:
                         label = t.label
 
                     statusMap = {dai.Tracklet.TrackingStatus.NEW : "NEW", dai.Tracklet.TrackingStatus.TRACKED : "TRACKED", dai.Tracklet.TrackingStatus.LOST : "LOST", dai.Tracklet.TrackingStatus.REMOVED : "REMOVED" }
-                    cv2.putText(frame, str(label), (x1 + 10, y1 + 20), cv2.FONT_HERSHEY_TRIPLEX, 2, color)
-                    cv2.putText(frame, f"ID: {[t.id]}", (x1 + 10, y1 + 50), cv2.FONT_HERSHEY_TRIPLEX, 2, color)
-                    cv2.putText(frame, statusMap[t.status], (x1 + 10, y1 + 100), cv2.FONT_HERSHEY_TRIPLEX, 2, color)
+                    # cv2.putText(frame, str(label), (x1 + 10, y1 + 20), cv2.FONT_HERSHEY_TRIPLEX, 1, color)
+                    cv2.putText(frame, f"ID: {[t.id]}", (x1 + 10, y1 + 30), cv2.FONT_HERSHEY_TRIPLEX, 1, color)
+                    cv2.putText(frame, statusMap[t.status], (x1 + 10, y1 + 40), cv2.FONT_HERSHEY_TRIPLEX, 1, color)
                     cv2.rectangle(frame, (x1, y1), (x2, y2), color, cv2.FONT_HERSHEY_SIMPLEX)
 
-                    cv2.putText(frame, f"X: {int(t.spatialCoordinates.x)} mm", (x1 + 10, y1 + 150), cv2.FONT_HERSHEY_TRIPLEX, 2, color)
-                    cv2.putText(frame, f"Y: {int(t.spatialCoordinates.y)} mm", (x1 + 10, y1 + 200), cv2.FONT_HERSHEY_TRIPLEX, 2, color)
-                    cv2.putText(frame, f"Z: {int(t.spatialCoordinates.z)} mm", (x1 + 10, y1 + 250), cv2.FONT_HERSHEY_TRIPLEX, 2, color)
+                    # cv2.putText(frame, f"X: {int(t.spatialCoordinates.x / 1000)} m", (x1 + 10, y1 + 50), cv2.FONT_HERSHEY_TRIPLEX, 1, color)
+                    # cv2.putText(frame, f"Y: {int(t.spatialCoordinates.y / 1000)} m", (x1 + 10, y1 + 60), cv2.FONT_HERSHEY_TRIPLEX, 1, color)
+                    cv2.putText(frame, f"Z: {int(t.spatialCoordinates.z / 1000)} m", (x1 + 10, y1 + 100), cv2.FONT_HERSHEY_TRIPLEX, 1, color)
 
                     bboxes.append({
                         'id': t.id,
@@ -267,7 +262,7 @@ class DepthAI:
                         'time': datetime.now(),
                     })
 
-                cv2.putText(frame, "NN fps: {:.2f}".format(fps), (2, frame.shape[0] - 4), cv2.FONT_HERSHEY_TRIPLEX, 2, color)
+                cv2.putText(frame, "NN fps: {:.2f}".format(fps), (2, frame.shape[0] - 4), cv2.FONT_HERSHEY_TRIPLEX, 1, color)
 
                 cv2.imshow("tracker", frame)
 
