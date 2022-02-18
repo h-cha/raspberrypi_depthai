@@ -41,7 +41,7 @@ class AlertM5Stack:
             # if self.count > 50:
             #     sys.exit()
             # if tracking['dangerous'] == True and tracking['status'] != 'LOST' and tracking['close'] == True :
-            if tracking['dangerous'] == True and tracking['status'] != 'LOST' and tracking['close'] == True :
+            if tracking['dangerous'] == True and tracking['status'] != 'LOST' :
                 if self.ONOFF == False:
                     self.ONOFF = True
                     ser0.write(b"1")
