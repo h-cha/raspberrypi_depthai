@@ -9,7 +9,7 @@ import time
 import argparse
 from datetime import datetime, timedelta
 from arg_manager import parseArgs
-
+from datetime import datetime, timedelta
 syncNN = True
 labelMap = ["background", "aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow",
             "diningtable", "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
@@ -47,7 +47,7 @@ class DepthAI:
         colorCam.setResolution(dai.ColorCameraProperties.SensorResolution.THE_1080_P)
         colorCam.setInterleaved(False)
         colorCam.setColorOrder(dai.ColorCameraProperties.ColorOrder.BGR)
-        colorCam.setPreviewKeepAspectRatio(False)
+        # colorCam.setPreviewKeepAspectRatio(False)
 
         monoLeft.setResolution(dai.MonoCameraProperties.SensorResolution.THE_400_P)
         monoLeft.setBoardSocket(dai.CameraBoardSocket.LEFT)
@@ -58,9 +58,13 @@ class DepthAI:
         stereo.setOutputDepth(True)
         stereo.setConfidenceThreshold(255)
 
+
+        # longer 消すかも
+        # stereo.setSubpixel(False)
+
         # spatialDetectionNetwork.setBlobPath(nnBlobPath)
         spatialDetectionNetwork.setBlobPath(str(blobconverter.from_zoo(name='mobilenet-ssd', shaves=6)))
-        spatialDetectionNetwork.setConfidenceThreshold(0.5)
+        spatialDetectionNetwork.setConfidenceThreshold(0.4)  # 消すかも
         spatialDetectionNetwork.input.setBlocking(False)
         spatialDetectionNetwork.setBoundingBoxScaleFactor(0.5)
         spatialDetectionNetwork.setDepthLowerThreshold(100)
@@ -95,7 +99,7 @@ class DepthAI:
         # possible tracking types: ZERO_TERM_COLOR_HISTOGRAM, ZERO_TERM_IMAGELESS
         objectTracker.setTrackerType(dai.TrackerType.ZERO_TERM_COLOR_HISTOGRAM)
         # take the smallest ID when new object is tracked, possible options: SMALLEST_ID, UNIQUE_ID
-        objectTracker.setTrackerIdAssigmentPolicy(dai.TrackerIdAssigmentPolicy.SMALLEST_ID)
+        objectTracker.setTrackerIdAssigmentPolicy(dai.TrackerIdAssigmentPolicy.UNIQUE_ID)
 
         # fullFrame
         if args.full_frame:
@@ -239,13 +243,16 @@ class DepthAI:
 
                     statusMap = {dai.Tracklet.TrackingStatus.NEW : "NEW", dai.Tracklet.TrackingStatus.TRACKED : "TRACKED", dai.Tracklet.TrackingStatus.LOST : "LOST", dai.Tracklet.TrackingStatus.REMOVED : "REMOVED" }
                     # cv2.putText(frame, str(label), (x1 + 10, y1 + 20), cv2.FONT_HERSHEY_TRIPLEX, 1, color)
-                    # cv2.putText(frame, f"ID: {[t.id]}", (x1 + 10, y1 + 30), cv2.FONT_HERSHEY_TRIPLEX, 1, color)
+                    if statusMap[t.status] == "LOST" or statusMap[t.status] == "REMOVED":
+
+                        cv2.putText(frame, f"{t.id}", (x1 + 10, y1 + 10), cv2.FONT_HERSHEY_TRIPLEX, 0.3, color)
                     # cv2.putText(frame, statusMap[t.status], (x1 + 10, y1 + 40), cv2.FONT_HERSHEY_TRIPLEX, 1, color)
-                    cv2.rectangle(frame, (x1, y1), (x2, y2), color, cv2.FONT_HERSHEY_SIMPLEX)
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), color, cv2.FONT_HERSHEY_SIMPLEX)
 
                     # cv2.putText(frame, f"X: {int(t.spatialCoordinates.x / 1000)} m", (x1 + 10, y1 + 50), cv2.FONT_HERSHEY_TRIPLEX, 1, color)
                     # cv2.putText(frame, f"Y: {int(t.spatialCoordinates.y / 1000)} m", (x1 + 10, y1 + 60), cv2.FONT_HERSHEY_TRIPLEX, 1, color)
-                    cv2.putText(frame, f"{int(t.spatialCoordinates.z / 1000)} m", (x1 + 10, y1 + 20), cv2.FONT_HERSHEY_TRIPLEX, 1, color)
+                    # cv2.putText(frame, f"{int(t.spatialCoordinates.z / 1000)} m", (x1 + 10, y1 + 20), cv2.FONT_HERSHEY_TRIPLEX, 0.5, color)
+                  
 
                     bboxes.append({
                         'id': t.id,
@@ -261,9 +268,10 @@ class DepthAI:
                         'status': statusMap[t.status],
                         'time': datetime.now(),
                     })
+                # time = str(datetime.now().strftime('%Y年%m月%d日 %H:%M:%S'))
 
-                cv2.putText(frame, "NN fps: {:.2f}".format(fps), (2, frame.shape[0] - 4), cv2.FONT_HERSHEY_TRIPLEX, 1, color)
-
+                # cv2.putText(frame, "NN fps: {:.2f}".format(fps), (2, frame.shape[0] - 4), cv2.FONT_HERSHEY_TRIPLEX, 0.5, color)
+                cv2.putText(frame, str(datetime.now().strftime('%Y/%m/%d %H:%M:%S')), (2, frame.shape[0] - 4), cv2.FONT_HERSHEY_TRIPLEX, 0.5, color)
                 cv2.imshow("tracker", frame)
 
                 if cv2.waitKey(1) == ord('q'):
